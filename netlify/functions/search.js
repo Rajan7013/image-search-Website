@@ -15,4 +15,3 @@ export async function handler(event) {
 }
 console.log("Query params:", { query, page, perPage });
 console.log("Using key:", process.env.UNSPLASH_ACCESS_KEY ? "✅ Set" : "❌ Missing");
-
