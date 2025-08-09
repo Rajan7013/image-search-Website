@@ -1,4 +1,4 @@
 [build]
-
-  [build.environment]
-    SECRETS_SCAN_OMIT_KEYS = "VITE_UNSPLASH_ACCESS_KEY"
+  command = "npm run build"
+  functions = "netlify/functions"
+  publish = "dist"
