@@ -1,36 +1,44 @@
-const UNSPLASH_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
+// src/api/unsplash.js
+const KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
 
-export const searchImages = async (query, page = 1, perPage = 12) => {
-  let url;
+if (!KEY) {
+  // helpful during dev if you forgot to add .env
+  console.warn(
+    "VITE_UNSPLASH_ACCESS_KEY is not set. Add it to .env for dev or Netlify env vars for production."
+  );
+}
 
-  if (import.meta.env.DEV) {
-    // Local development → call Unsplash directly
-    url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(
-      query
-    )}&page=${page}&per_page=${perPage}&client_id=${UNSPLASH_KEY}`;
-  } else {
-    // Production on Netlify → use serverless function
-    url = `/.netlify/functions/search?query=${encodeURIComponent(
-      query
-    )}&page=${page}&per_page=${perPage}`;
-  }
+/**
+ * Search Unsplash photos
+ * returns data.results (array)
+ */
+export const searchImages = async (query = "nature", page = 1, perPage = 12) => {
+  const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(
+    query
+  )}&page=${page}&per_page=${perPage}&client_id=${KEY}`;
 
   const res = await fetch(url);
-  if (!res.ok) throw new Error("Failed to fetch images");
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Unsplash search failed: ${res.status} ${res.statusText} — ${text}`);
+  }
+
   const data = await res.json();
-  return data.results;
+  return data.results; // same shape your App currently expects
 };
 
+/**
+ * Get a random photo
+ * returns full photo object
+ */
 export const getRandomImage = async () => {
-  let url;
-
-  if (import.meta.env.DEV) {
-    url = `https://api.unsplash.com/photos/random?client_id=${UNSPLASH_KEY}`;
-  } else {
-    url = `/.netlify/functions/random`;
-  }
+  const url = `https://api.unsplash.com/photos/random?client_id=${KEY}`;
 
   const res = await fetch(url);
-  if (!res.ok) throw new Error("Failed to fetch random image");
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Unsplash random failed: ${res.status} ${res.statusText} — ${text}`);
+  }
+
   return await res.json();
 };
