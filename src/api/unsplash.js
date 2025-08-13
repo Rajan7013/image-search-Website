@@ -2,17 +2,12 @@
 const KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
 
 if (!KEY) {
-  // helpful during dev if you forgot to add .env
   console.warn(
     "VITE_UNSPLASH_ACCESS_KEY is not set. Add it to .env for dev or Netlify env vars for production."
   );
 }
 
-/**
- * Search Unsplash photos
- * returns data.results (array)
- */
-export const searchImages = async (query = "nature", page = 1, perPage = 12) => {
+export const searchImages = async (query = "nature", page = 1, perPage = 15) => {
   const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(
     query
   )}&page=${page}&per_page=${perPage}&client_id=${KEY}`;
@@ -24,13 +19,9 @@ export const searchImages = async (query = "nature", page = 1, perPage = 12) => 
   }
 
   const data = await res.json();
-  return data.results; // same shape your App currently expects
+  return data.results;
 };
 
-/**
- * Get a random photo
- * returns full photo object
- */
 export const getRandomImage = async () => {
   const url = `https://api.unsplash.com/photos/random?client_id=${KEY}`;
 
